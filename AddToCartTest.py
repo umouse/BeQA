@@ -10,7 +10,7 @@ class AddToCartTest(unittest.TestCase):
     def setUp(self):
         self.driver = webdriver.Firefox()
         self.driver.maximize_window()
-        self.driver.implicitly_wait(4)
+        self.driver.implicitly_wait(10)
 
     def test_add_product_to_cart(self):
         self.driver.get(self.WEBSITE)
@@ -19,26 +19,27 @@ class AddToCartTest(unittest.TestCase):
 
         self.assertEqual(len(popular_links), self.NUMBER_OF_PRODUCTS)
 
-        popular_link = popular_links[0]
-        popular_link.click()
+        popular_links[0].click()
 
-        product_name = self.driver.find_element_by_class_name("detail-title")
-        details_page_product_name = product_name.text
+        details_page_product_name = self.driver.find_element_by_class_name("detail-title").text
 
-        price = self.driver.find_element_by_id("price_label")
-        product_price = price.text
+        product_price = self.driver.find_element_by_id("price_label").text
 
-        submit_button = self.driver.find_element_by_name("topurchases")
-        submit_button.click()
+        self.driver.find_element_by_name("topurchases").click()
 
-        product_name = self.driver.find_element_by_class_name("cart-i-title-link")
-        cart_product_name = product_name.text
+        cart_product_name = self.driver.find_element_by_class_name("cart-i-title-link").text
 
-        price = self.driver.find_element_by_name("cost")
-        cart_product_price = price.text
+        cart_product_price = self.driver.find_element_by_name("cost").text
 
         self.assertEqual(details_page_product_name, cart_product_name)
         self.assertEqual(product_price, cart_product_price)
+
+        self.driver.find_element_by_name("topurchaseskitfromcart").click()
+
+        # wait for kit to be added to cart
+        self.driver.find_element_by_css_selector('.cart-kit-total')
+
+        self.driver.find_element_by_css_selector('#cart-popup .cart-amount-plus').click()
 
     def tearDown(self):
         self.driver.quit()
